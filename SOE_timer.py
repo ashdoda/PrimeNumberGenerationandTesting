@@ -47,7 +47,7 @@ def primes_in_range_with_time(start, end):
     primes = [p for p in all_primes_up_to_end if p >= start]
     t1 = time.perf_counter()
 
-    return primes, (t1 - t0)
+    return primes
 
 
 if __name__ == "__main__":
