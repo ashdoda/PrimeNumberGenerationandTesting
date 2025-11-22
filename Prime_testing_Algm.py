@@ -5,7 +5,11 @@ import time
 import random
 
 # List for generated or inputed test numbers
-test_Numbers = []
+def list_Of_Numbers(the_list):
+    test_Numbers = the_list
+
+
+
 
 # Trail devision
 def trail_Devision(n):
@@ -18,6 +22,7 @@ def trail_Devision(n):
     return True
 
 def generate_test_cases(count, min_digits, max_digits):
+    temp_list = []
     for _ in range(count):
         # Determine a random number of digits for size variation
         num_digits = random.randint(min_digits, max_digits)
@@ -28,10 +33,10 @@ def generate_test_cases(count, min_digits, max_digits):
         
         # Generate the number and add it to the list
         number = random.randint(min_val, max_val)
-        test_Numbers.append(number)
+        temp_list.append(number)
 
-def run_Time_Tracker():
-    for number in test_Numbers:
+def run_Time_Tracker(A_List):
+    for number in A_List:
         start_time = time.time()
         result = trail_Devision(number)
         end_time = time.time()
