@@ -36,12 +36,14 @@ def generate_test_cases(count, min_digits, max_digits):
         temp_list.append(number)
 
 def run_Time_Tracker(A_List):
+    start_time = time.time()
+    end_time = time.time()
+    elapsed_time = end_time - start_time
     for number in A_List:
-        start_time = time.time()
+        
         result = trail_Devision(number)
-        end_time = time.time()
-        elapsed_time = end_time - start_time
         print(f"Number: {number}, Prime: {result}, Time taken: {elapsed_time:.10f} seconds")
+    print(f"Total Time taken for all numbers: {elapsed_time:.10f} seconds")
 
 
 
