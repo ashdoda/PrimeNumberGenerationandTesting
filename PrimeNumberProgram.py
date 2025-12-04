@@ -87,7 +87,6 @@ def atkin_timed(limit):
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Sieve of Atkin found {len(primes)} primes up to {limit} in {elapsed_time:.6f} seconds.")
-    print(primes) 
     return primes, elapsed_time 
 
 # List for generated or inputed test numbers
@@ -122,12 +121,14 @@ def generate_test_cases(count, min_digits, max_digits):
         temp_list.append(number)
 
 def run_Time_Tracker(A_List):
+    start_time = time.time()
     for number in A_List:
-        start_time = time.time()
         result = trail_Devision(number)
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Number: {number}, Prime: {result}, Time taken: {elapsed_time:.10f} seconds")
+        if result == False:
+            print(f"Number: {number}, Prime: {result}")
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Total Time taken for all numbers: {elapsed_time:.10f} seconds")
 
 
 def main():
@@ -137,7 +138,6 @@ def main():
     primes, elapsed = primes_in_range_with_time(start, end)
 
     print(f"\nThere are {len(primes)} prime numbers in the interval [{start}, {end}]:")
-    print(primes)
     print(f"\nExecution time: {elapsed:.6f} seconds")
     run_Time_Tracker(primes)
 
