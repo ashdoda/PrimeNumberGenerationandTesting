@@ -87,13 +87,17 @@ def atkin_timed(limit):
     primes = sieve_of_atkin(limit)
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Sieve of Atkin found {len(primes)} primes up to {limit} in {elapsed_time:.6f} seconds.")
     return primes, elapsed_time 
+
 def run_random_experiments(num_cases, low_n, high_n):
     """
-    Generate random n values and time both Sieve of Eratosthenes
-    and Sieve of Atkin on each.
-    Returns: (n_values, eratosthenes_times, atkin_times)
+    Generate random n values and time:
+      - Sieve of Eratosthenes
+      - Sieve of Atkin
+    Then use trial division to verify the sieve outputs.
+
+    Returns:
+      n_values, eratosthenes_times, atkin_times, trial_verify_times
     """
     # 1. Generate random test sizes
     n_values = generate_random_numbers(num_cases, low=low_n, high=high_n)
@@ -101,20 +105,38 @@ def run_random_experiments(num_cases, low_n, high_n):
 
     eratosthenes_times = []
     atkin_times = []
+    trial_verify_times = []
 
     for n in n_values:
+        print(f"\nTesting n = {n:,}")
+
         # Time Eratosthenes
-        _, t_erat = primes_up_to_with_time(n)
-        
+        primes_e, t_erat = primes_up_to_with_time(n)
+
         # Time Atkin
-        _, t_atkin = atkin_timed(n)
+        primes_a, t_atkin = atkin_timed(n)
+
+        # First, check that both sieves produced identical prime lists
+        if primes_e != primes_a:
+            print("MISMATCH between Eratosthenes and Atkin for n =", n)
+        else:
+            print("Sieves agree on primes up to", n)
+
+        # Now use trial division to verify those primes
+        # (we only need to verify one list, since they should match)
+        t_trial_verify = trial_check_list_with_time(primes_e)
+
+        print(
+            f"Eratosthenes: {t_erat:.6f} s | "
+            f"Atkin: {t_atkin:.6f} s | "
+            f"Trial verify: {t_trial_verify:.6f} s"
+        )
 
         eratosthenes_times.append(t_erat)
         atkin_times.append(t_atkin)
+        trial_verify_times.append(t_trial_verify)
 
-        print(f"n = {n:,} | Eratosthenes: {t_erat:.6f} s | Atkin: {t_atkin:.6f} s")
-
-    return n_values, eratosthenes_times, atkin_times
+    return n_values, eratosthenes_times, atkin_times, trial_verify_times
 
 # Trail devision
 def trail_Devision(n):
@@ -125,6 +147,21 @@ def trail_Devision(n):
         if n % i == 0:
             return False
     return True
+
+def trial_check_list_with_time(numbers):
+    """
+    Use trial division to verify that every number in 'numbers'
+    is actually prime. Returns the elapsed time.
+    If any number is not prime, it prints an error.
+    """
+    start_time = time.perf_counter()
+    for number in numbers:
+        if not trail_Devision(number):
+            print(f"ERROR: {number} was reported as prime by a sieve, "
+                  f"but trial division says it is composite.")
+    end_time = time.perf_counter()
+    return end_time - start_time
+
 
 def generate_test_cases(count, min_digits, max_digits):
     temp_list = []
@@ -181,6 +218,30 @@ def plot_times_with_best_fit(n_values, erat_times, atkin_times):
     plt.tight_layout()
     plt.show()
 
+def plot_trial_times_with_best_fit(n_values, trial_times):
+    """
+    Plot trial-division verification time vs n (upper limit for primes)
+    with a best-fit line.
+    """
+    x = np.array(n_values, dtype=float)
+    y = np.array(trial_times, dtype=float)
+
+    # Scatter plot
+    plt.scatter(x, y, label="Trial division verify (data)")
+
+    # Best-fit line
+    coef = np.polyfit(x, y, 1)
+    fit_y = np.polyval(coef, x)
+    plt.plot(x, fit_y, linestyle="--", label="Trial division (best fit)")
+
+    plt.xlabel("n (upper limit for primes)")
+    plt.ylabel("Time (seconds)")
+    plt.title("Time for Trial Division to Verify Sieve Outputs")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
 def main():
     print("Choose mode:")
     print("1) Manual single run")
@@ -207,15 +268,19 @@ def main():
         low_n = int(input("Minimum n value: "))
         high_n = int(input("Maximum n value: "))
 
-        n_values, erat_times, atkin_times = run_random_experiments(
+        n_values, erat_times, atkin_times, trial_verify_times = run_random_experiments(
             num_cases, low_n, high_n
         )
 
-        # Plot the results with best-fit lines
+        # Plot 1: Eratosthenes vs Atkin
         plot_times_with_best_fit(n_values, erat_times, atkin_times)
+
+        # Plot 2: Trial-division verification time
+        plot_trial_times_with_best_fit(n_values, trial_verify_times)
+
 
     else:
         print("Invalid choice. Exiting.")
-        
+
 if __name__ == "__main__":
     main()
