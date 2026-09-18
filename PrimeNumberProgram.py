@@ -4,9 +4,9 @@ import math
 import random
 
 def sieve_of_eratosthenes(n):
-    """
-    Use the Sieve of Eratosthenes to find all prime numbers between 2 and n, and return the list.
-    """
+    
+   # Use the Sieve of Eratosthenes to find all prime numbers between 2 and n, and return the list.
+    
     if n < 2:
         return []
 
