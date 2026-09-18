@@ -1,4 +1,4 @@
-
+"Claude used to create test cases"
 import pytest
 import PrimeNumberProgram as pp
 
